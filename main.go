@@ -36,7 +36,10 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello %s", r.Method) // send data to client side
 	fmt.Println("method:", r.Method)
 	if r.Method == "POST" {
-		r.ParseMultipartForm(32 << 20)
+		err := r.ParseMultipartForm(32 << 20)
+		if err != nil {
+			log.Fatal("Error parsing form", err)
+		}
 		form := r.MultipartForm
 		files := form.File["uploadfile[]"]
 		if files == nil {
