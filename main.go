@@ -3,19 +3,31 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 )
 
+var index_response_string []byte
+
 func main() {
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
+	var err error
+	index_response_string, err = ioutil.ReadFile("./static/index.html")
+	if err != nil {
+		log.Fatal("Missing index.html: ", err)
+	}
+	http.HandleFunc("/", index_handler)
 	http.HandleFunc("/upload", upload)
-	err := http.ListenAndServe(":9090", nil) // set listen port
+	err = http.ListenAndServe(":9090", nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+}
+
+func index_handler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprintf(w, "%s", index_response_string)
 }
 
 // upload logic
