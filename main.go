@@ -20,6 +20,7 @@ func main() {
 
 // upload logic
 func upload(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, "Hello %s", r.Method) // send data to client side
 	fmt.Println("method:", r.Method)
 	if r.Method == "POST" {
@@ -46,6 +47,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			}
 			defer local_file.Close()
 			io.Copy(local_file, f)
+			fmt.Fprintf(w, "<div>File saved successfully %s</div>", file.Filename)
 		}
 	}
 }
