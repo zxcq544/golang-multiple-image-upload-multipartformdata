@@ -7,12 +7,30 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/speedata/optionparser"
 )
 
 var index_response_string []byte
 
+var image_directory string
+
+var video_directory string
+
 func main() {
-	var err error
+	image_directory = "image"
+	video_directory = "video"
+	op := optionparser.NewOptionParser()
+	op.On("-i", "--image VAL", "set image directory", &image_directory)
+	op.On("-v", "--video VAL", "set video directory", &video_directory)
+
+	err := op.Parse()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("image directory is %s\n", image_directory)
+	fmt.Printf("video directory is %s\n", video_directory)
+
 	index_response_string, err = ioutil.ReadFile("./static/index.html")
 	if err != nil {
 		log.Fatal("Missing index.html: ", err)
