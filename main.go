@@ -18,18 +18,26 @@ var image_directory string
 var video_directory string
 
 func main() {
-	image_directory = "image"
-	video_directory = "video"
+	image_directory = "static/images"
+	video_directory = "static/videos"
 	op := optionparser.NewOptionParser()
-	op.On("-i", "--image VAL", "set image directory", &image_directory)
-	op.On("-v", "--video VAL", "set video directory", &video_directory)
+	op.On("-i", "--images VAL", "set images directory", &image_directory)
+	op.On("-v", "--videos VAL", "set videos directory", &video_directory)
 
 	err := op.Parse()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("image directory is %s\n", image_directory)
-	fmt.Printf("video directory is %s\n", video_directory)
+	fmt.Printf("images directory is %s\n", image_directory)
+	fmt.Printf("videos directory is %s\n", video_directory)
+	err = os.MkdirAll(image_directory, os.ModePerm)
+	if err != nil {
+		log.Fatal("Can't create directory ", image_directory, err)
+	}
+	err = os.MkdirAll(video_directory, os.ModePerm)
+	if err != nil {
+		log.Fatal("Can't create directory ", video_directory, err)
+	}
 
 	index_response_string, err = ioutil.ReadFile("./static/index.html")
 	if err != nil {
