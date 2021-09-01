@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
+	"strings"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/speedata/optionparser"
@@ -89,13 +91,26 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			}
 			fmt.Println("	mime type", mime_type)
 			defer f.Close()
-			local_file, err := os.OpenFile(file.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-			if err != nil {
-				fmt.Println(err)
-				return
+
+			if strings.Contains(mime_type.String(), "image") {
+				local_file, err := os.OpenFile(path.Join(image_directory, file.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				io.Copy(local_file, f)
+				defer local_file.Close()
 			}
-			defer local_file.Close()
-			io.Copy(local_file, f)
+			if strings.Contains(mime_type.String(), "video") {
+				local_file, err := os.OpenFile(path.Join(video_directory, file.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				io.Copy(local_file, f)
+				defer local_file.Close()
+			}
+
 			fmt.Fprintf(w, "<div>File saved successfully %s</div>", file.Filename)
 		}
 	}
