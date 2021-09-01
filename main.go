@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/speedata/optionparser"
 )
 
@@ -74,12 +75,19 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, file := range files {
-			log.Println(file.Filename)
+			fmt.Print(file.Filename)
+
 			f, err := file.Open()
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
+			mime_type, err := mimetype.DetectReader(f)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			fmt.Println("	mime type", mime_type)
 			defer f.Close()
 			local_file, err := os.OpenFile(file.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			if err != nil {
