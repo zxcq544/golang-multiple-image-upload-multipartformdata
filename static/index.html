@@ -7,11 +7,43 @@
 </head>
 
 <body>
+
     <h1>Hello from a static page</h1>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="uploadfile[]" multiple>
+    <form method="POST" enctype="multipart/form-data" name="upload">
+        <input type="file" name="uploadfile[]" multiple id="file_input">
         <input type="submit">
     </form>
+    <div id="log"></div>
+    <div id="progress"></div>
+
+
+
+    <script>
+        var form = document.forms.namedItem("upload");
+        form.addEventListener('submit', function (ev) {
+            var file_input = document.getElementById("file_input")
+            var progress = document.getElementById("progress");
+            var Output = document.getElementById("log");
+            var Data = new FormData(form);
+            var Req = new XMLHttpRequest();
+            Req.open("POST", "upload", true);
+            Req.upload.onprogress = function (Event) {
+                progress.innerHTML = "Sending " + (Event.loaded / 1048576).toFixed(2) + " MB" + ' / ' + (event.total / 1048576).toFixed(2) + " MB";
+            }
+            Req.onload = function (Event) {
+                if (Req.status == 200) {
+                    Output.innerHTML = Req.response;
+                    file_input.value = null;
+                } else {
+                    Output.innerHTML = "Error " + Req.status + " occurred when trying to upload your file.<br \/>";
+                }
+            };
+            Req.send(Data);
+            ev.preventDefault();
+        }, false);
+
+    </script>
 </body>
+
 
 </html>
