@@ -4,6 +4,35 @@
 <head>
     <meta charset="utf-8">
     <title>A static page</title>
+    <style>
+        #progress_container {
+            width: 100px;
+            background-color: rgb(161, 161, 161);
+            height: 20px;
+            position: relative;
+        }
+
+        #progress_container_text {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 100%;
+        }
+
+        #progress_container_text_align_center {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #loading_bar {
+            width: 0%;
+            height: 20px;
+            background-color: rgb(58, 166, 255);
+        }
+    </style>
 </head>
 
 <body>
@@ -14,7 +43,14 @@
         <input type="submit">
     </form>
     <div id="log"></div>
-    <div id="progress"></div>
+    <div id="progress_text"></div>
+
+    <div id="progress_container">
+        <div id="progress_container_text">
+            <div id="progress_container_text_align_center">0%</div>
+        </div>
+        <div id="loading_bar"></div>
+    </div>
 
 
 
@@ -22,13 +58,16 @@
         var form = document.forms.namedItem("upload");
         form.addEventListener('submit', function (ev) {
             var file_input = document.getElementById("file_input")
-            var progress = document.getElementById("progress");
-            var Output = document.getElementById("log");
-            var Data = new FormData(form);
-            var Req = new XMLHttpRequest();
-            Req.open("POST", "upload", true);
+            var loading_bar = document.getElementById("loading_bar")
+            var progress_container_text_align_center = document.getElementById("progress_container_text_align_center")
+            var Output = document.getElementById("log")
+            var Data = new FormData(form)
+            var Req = new XMLHttpRequest()
+            Req.open("POST", "upload", true)
             Req.upload.onprogress = function (Event) {
-                progress.innerHTML = "Sending " + (Event.loaded / 1048576).toFixed(2) + " MB" + ' / ' + (event.total / 1048576).toFixed(2) + " MB";
+                progress_text.innerHTML = "Sending " + (Event.loaded / 1048576).toFixed(2) + " MB" + ' / ' + (Event.total / 1048576).toFixed(2) + " MB";
+                progress_container_text_align_center.innerHTML = ((Event.loaded / Event.total) * 100).toFixed() + "%";
+                loading_bar.style.width = (Event.loaded / Event.total) * 100 + "%";
             }
             Req.onload = function (Event) {
                 if (Req.status == 200) {
