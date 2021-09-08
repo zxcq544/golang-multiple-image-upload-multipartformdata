@@ -61,19 +61,18 @@ func index_handler(w http.ResponseWriter, r *http.Request) {
 
 // upload logic
 func upload(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, "Hello %s", r.Method) // send data to client side
-	fmt.Println("method:", r.Method)
+	log.Println("method:", r.Method)
 	if r.Method == "POST" {
 		err := r.ParseMultipartForm(32 << 20)
 		if err != nil {
-			log.Fatal("Error parsing form", err)
+			log.Println("Error parsing form. Maybe upload cancelled. Error: ", err)
+			return
 		}
 		form := r.MultipartForm
 		files := form.File["uploadfile[]"]
 		if files == nil {
 			fmt.Println("files is empty")
-			return
 		}
 
 		for _, file := range files {
@@ -86,7 +85,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			}
 			mime_type, err := mimetype.DetectReader(f)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("Mime type heck failed ", err)
 				return
 			}
 			fmt.Println("	mime type", mime_type)
@@ -107,10 +106,15 @@ func upload(w http.ResponseWriter, r *http.Request) {
 					fmt.Println(err)
 					return
 				}
-				io.Copy(local_file, f)
+				log.Println("Created file ", file.Filename)
+				_, err = io.Copy(local_file, f)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
 				defer local_file.Close()
 			}
-
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			fmt.Fprintf(w, "<div>File saved successfully %s</div>", file.Filename)
 		}
 	}
