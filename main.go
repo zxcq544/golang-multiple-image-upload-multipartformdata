@@ -1,9 +1,10 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +15,9 @@ import (
 	"github.com/speedata/optionparser"
 )
 
+//go:embed "static/index/*"
+var embeddedFS embed.FS
+
 var index_response_string []byte
 
 var image_directory string
@@ -21,42 +25,41 @@ var image_directory string
 var video_directory string
 
 func main() {
+	serverRoot, err := fs.Sub(embeddedFS, "static/index")
+	if err != nil {
+		log.Println("Root directory not found: ", err)
+	}
 	image_directory = "static/images"
 	video_directory = "static/videos"
 	op := optionparser.NewOptionParser()
 	op.On("-i", "--images VAL", "set images directory", &image_directory)
 	op.On("-v", "--videos VAL", "set videos directory", &video_directory)
 
-	err := op.Parse()
+	err = op.Parse()
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error parsing options: ", err)
 	}
 	fmt.Printf("images directory is %s\n", image_directory)
 	fmt.Printf("videos directory is %s\n", video_directory)
 	err = os.MkdirAll(image_directory, os.ModePerm)
 	if err != nil {
-		log.Fatal("Can't create directory ", image_directory, err)
+		log.Println("Can't create directory ", image_directory, err)
 	}
 	err = os.MkdirAll(video_directory, os.ModePerm)
 	if err != nil {
-		log.Fatal("Can't create directory ", video_directory, err)
+		log.Println("Can't create directory ", video_directory, err)
 	}
 
-	index_response_string, err = ioutil.ReadFile("./static/index.html")
-	if err != nil {
-		log.Fatal("Missing index.html: ", err)
-	}
-	http.HandleFunc("/", index_handler)
+	// index_response_string, err = fs.ReadFile("static/index/index.html")
+	// if err != nil {
+	// 	log.Fatal("Missing index.html: ", err)
+	// }
+	http.Handle("/", http.FileServer(http.FS(serverRoot)))
 	http.HandleFunc("/upload", upload)
 	err = http.ListenAndServe(":9090", nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
-}
-
-func index_handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w, "%s", index_response_string)
 }
 
 // upload logic
