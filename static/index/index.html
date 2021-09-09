@@ -41,7 +41,7 @@
             loading_bar.style.width = (Event.loaded / Event.total) * 100 + "%";
         }
         form_reset.onclick = function (ev) {
-            console.log("is sending", is_sending)
+            // console.log("is sending", is_sending)
             if (is_sending) {
                 Req.abort()
                 form.reset()
