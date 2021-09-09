@@ -82,7 +82,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			}
 			mime_type, err := mimetype.DetectReader(f)
 			if err != nil {
-				fmt.Println("Mime type heck failed ", err)
+				fmt.Println("Mime type check failed ", err)
 				return
 			}
 			fmt.Println("	mime type", mime_type)
