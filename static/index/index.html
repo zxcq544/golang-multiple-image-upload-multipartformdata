@@ -27,6 +27,7 @@
 
 
     <script>
+        var is_sending = false
         var form_reset = document.getElementById("form_reset")
         var form = document.forms.namedItem("upload");
         var file_input = document.getElementById("file_input")
@@ -40,8 +41,12 @@
             loading_bar.style.width = (Event.loaded / Event.total) * 100 + "%";
         }
         form_reset.onclick = function (ev) {
-            Req.abort()
-            form.reset()
+            console.log("is sending", is_sending)
+            if (is_sending) {
+                Req.abort()
+                form.reset()
+                is_sending = false
+            }
         }
         form.onreset = function (ev) {
             progress_text.innerHTML = "Cancelled";
@@ -50,8 +55,8 @@
         }
         Req.onload = function (Event) {
             if (Req.status == 200) {
-                Output.innerHTML = Req.response;
-                file_input.value = null;
+                Output.innerHTML = Req.response
+                file_input.value = null
             } else {
                 Output.innerHTML = "Error " + Req.status + " occurred when trying to upload your file.<br \/>";
             }
@@ -59,7 +64,8 @@
         form.addEventListener('submit', function (ev) {
             var Data = new FormData(form)
             Req.open("POST", "upload", true)
-            Req.send(Data);
+            Req.send(Data)
+            is_sending = true
             ev.preventDefault();
         }, false);
 
