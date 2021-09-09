@@ -50,10 +50,6 @@ func main() {
 		log.Println("Can't create directory ", video_directory, err)
 	}
 
-	// index_response_string, err = fs.ReadFile("static/index/index.html")
-	// if err != nil {
-	// 	log.Fatal("Missing index.html: ", err)
-	// }
 	http.Handle("/", http.FileServer(http.FS(serverRoot)))
 	http.HandleFunc("/upload", upload)
 	err = http.ListenAndServe(":9090", nil) // set listen port
