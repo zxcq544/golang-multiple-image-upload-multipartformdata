@@ -18,8 +18,6 @@ import (
 //go:embed "static/index/*"
 var embeddedFS embed.FS
 
-var index_response_string []byte
-
 var image_directory string
 
 var video_directory string
