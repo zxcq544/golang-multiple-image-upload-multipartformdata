@@ -80,36 +80,35 @@ func upload(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(err)
 				return
 			}
-			mime_type, err := mimetype.DetectReader(f)
+			defer f.Close()
+
+			local_file, err := os.OpenFile(path.Join(image_directory, file.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+			if err != nil {
+				fmt.Println("Can't create file:", err)
+				return
+			}
+			io.Copy(local_file, f)
+			defer local_file.Close()
+			mime_type, err := mimetype.DetectFile(path.Join(image_directory, file.Filename))
 			if err != nil {
 				fmt.Println("Mime type check failed ", err)
 				return
 			}
 			fmt.Println("	mime type", mime_type)
-			defer f.Close()
-
-			if strings.Contains(mime_type.String(), "image") {
-				local_file, err := os.OpenFile(path.Join(image_directory, file.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+			if !strings.Contains(mime_type.String(), "image") {
+				err = local_file.Close()
 				if err != nil {
-					fmt.Println(err)
-					return
+					log.Println("Can't close file: ", err)
 				}
-				io.Copy(local_file, f)
-				defer local_file.Close()
-			}
-			if strings.Contains(mime_type.String(), "video") {
-				local_file, err := os.OpenFile(path.Join(video_directory, file.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+				log.Printf("File %s is not image. Removing...\n", file.Filename)
+				err = os.Remove(path.Join(image_directory, file.Filename))
 				if err != nil {
-					fmt.Println(err)
-					return
+					log.Println("Error removing file: ", err)
 				}
-				log.Println("Created file ", file.Filename)
-				_, err = io.Copy(local_file, f)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-				defer local_file.Close()
+				log.Printf("Successfully removed: %s\n", file.Filename)
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				fmt.Fprintf(w, "<div>File not saved because is not image %s   Type %s</div>", file.Filename, mime_type)
+				return
 			}
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			fmt.Fprintf(w, "<div>File saved successfully %s</div>", file.Filename)

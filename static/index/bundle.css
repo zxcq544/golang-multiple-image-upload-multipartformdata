@@ -1,0 +1,65 @@
+html, body {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	color: #333;
+	margin: 0;
+	padding: 8px;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+a {
+	color: rgb(0,100,200);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:visited {
+	color: rgb(0,80,160);
+}
+
+label {
+	display: block;
+}
+
+input, button, select, textarea {
+	font-family: inherit;
+	font-size: inherit;
+	-webkit-padding: 0.4em 0;
+	padding: 0.4em;
+	margin: 0 0 0.5em 0;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+}
+
+input:disabled {
+	color: #ccc;
+}
+
+button {
+	color: #333;
+	background-color: #f4f4f4;
+	outline: none;
+}
+
+button:disabled {
+	color: #999;
+}
+
+button:not(:disabled):active {
+	background-color: #ddd;
+}
+
+button:focus {
+	border-color: #666;
+}
+
+.image_block.svelte-wsoh82{display:flex;flex-wrap:nowrap;flex-direction:row;align-content:center;justify-content:flex-start;align-items:flex-start;margin:4px}button.svelte-wsoh82{display:inline-block;position:relative;box-sizing:border-box;text-decoration:none;color:#fff;width:100px;height:50px;line-height:30px;border-radius:7%;text-align:center;vertical-align:middle;font-weight:bold;box-shadow:1px 1px 2px indigo;background-color:blueviolet;border-color:blueviolet;padding:0px}button.svelte-wsoh82:hover{background-color:#985ad2;transition:background-color 150ms linear}button.svelte-wsoh82:active{background-color:mediumpurple;transform:translate(1px, 1px)}.remove.svelte-wsoh82{width:107px;height:50px;line-height:10px;border-radius:5px}.remove_cross.svelte-wsoh82{width:18px;height:18px;margin-left:-18px;font-size:10px;line-height:0px;vertical-align:middle;border-radius:0px}span.svelte-wsoh82{font-size:18px}img.svelte-wsoh82{width:100px}
