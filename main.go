@@ -58,7 +58,6 @@ func main() {
 
 // upload logic
 func upload(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello %s", r.Method) // send data to client side
 	log.Println("method:", r.Method)
 	if r.Method == "POST" {
 		err := r.ParseMultipartForm(32 << 20)
@@ -106,12 +105,13 @@ func upload(w http.ResponseWriter, r *http.Request) {
 					log.Println("Error removing file: ", err)
 				}
 				log.Printf("Successfully removed: %s\n", file.Filename)
-				w.Header().Set("Content-Type", "text/html; charset=utf-8")
-				fmt.Fprintf(w, "<div>File not saved because is not image %s   Type %s</div>", file.Filename, mime_type)
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprintf(w, "File not saved because is not image %s. Type %s", file.Filename, mime_type)
 				return
 			}
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			fmt.Fprintf(w, "<div>File saved successfully %s</div>", file.Filename)
+			w.WriteHeader(http.StatusOK)
+			// w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			fmt.Fprintf(w, "File saved successfully %s", file.Filename)
 		}
 	}
 }
