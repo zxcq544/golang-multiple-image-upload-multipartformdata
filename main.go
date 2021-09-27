@@ -13,11 +13,11 @@ import (
 )
 
 func init() {
-	Image_directory, Video_directory = InitApp()
+	Image_directory = InitApp()
 }
 
-func InitApp() (string, string) {
-	return "static/images", "static/videos"
+func InitApp() string {
+	return "static/images"
 }
 
 //go:embed "static/index/*"
@@ -25,7 +25,7 @@ var embeddedFS embed.FS
 
 var Image_directory string
 
-var Video_directory string
+// var Video_directory string
 
 func main() {
 	serverRoot, err := fs.Sub(embeddedFS, "static/index")
@@ -34,22 +34,22 @@ func main() {
 	}
 	op := optionparser.NewOptionParser()
 	op.On("-i", "--images VAL", "set images directory", &Image_directory)
-	op.On("-v", "--videos VAL", "set videos directory", &Video_directory)
+	// op.On("-v", "--videos VAL", "set videos directory", &Video_directory)
 
 	err = op.Parse()
 	if err != nil {
 		log.Println("Error parsing options: ", err)
 	}
 	fmt.Printf("images directory is %s\n", Image_directory)
-	fmt.Printf("videos directory is %s\n", Video_directory)
+	// fmt.Printf("videos directory is %s\n", Video_directory)
 	err = os.MkdirAll(Image_directory, os.ModePerm)
 	if err != nil {
 		log.Println("Can't create directory ", Image_directory, err)
 	}
-	err = os.MkdirAll(Video_directory, os.ModePerm)
-	if err != nil {
-		log.Println("Can't create directory ", Video_directory, err)
-	}
+	// err = os.MkdirAll(Video_directory, os.ModePerm)
+	// if err != nil {
+	// 	log.Println("Can't create directory ", Video_directory, err)
+	// }
 
 	http.Handle("/", http.FileServer(http.FS(serverRoot)))
 	http.HandleFunc("/upload", handlers.Upload)
